@@ -50,10 +50,10 @@ async function followUserController(req, res) {
     const follow = await followModel.create({
         followee: followeeId,
         follower: followerId
-    })
+    }).populate("followee", "username")
 
     res.status(200).json({
-        message: `${follow.follower.username} started following ${follow.followee.username}`,
+        message: `Follow request sent to ${follow.followee.username}`,
         follow
     })
 }
@@ -66,7 +66,7 @@ async function fetchFollowRequestsController(req, res) {
             { follower: userId },
             { followee: userId }
         ]
-    }).populate("follower").populate("followee")
+    }).populate("follower", "username _id").populate("followee", "username _id")
 
     const recievedRequests = allFollowrequests.filter((req) => req.followee._id == userId)
     const sentRequests = allFollowrequests.filter((req) => req.follower._id == userId)
@@ -79,11 +79,107 @@ async function fetchFollowRequestsController(req, res) {
     })
 }
 
+async function acceptFollowRequest(req, res) {
+    const userId = req.decodedUser.id
+    const reqId = req.params.reqId
+
+    const followReq = await followModel.findById(reqId).populate("follower").populate("followee", "_id")
+
+    if (!followReq) {
+        return res.status(404).json({
+            message: "The request does not exist."
+        })
+    }
+
+    if (followReq.followee._id.toString() !== userId) {
+
+        return res.status(403).json({
+            message: "You are not authorised to handle this follow request . . ."
+        })
+    }
+
+    const acceptedReq = await followModel.findOneAndUpdate(
+        {
+            _id: reqId,
+            status: "pending",
+        },
+        {
+            status: "accepted",
+        },
+        {
+            new: true,
+        }
+    ).populate("follower", "username")
+
+    if (!acceptedReq) {
+        return res.status(409).json({
+            message: "The request was already handled."
+        })
+    }
+
+    res.status(200).json({
+        message: `Request accepted from ${acceptedReq.follower.username}`,
+        acceptedReq
+    })
+
+
+
+}
+
+async function rejectFollowRequest(req, res) {
+    const userId = req.decodedUser.id
+    const reqId = req.params.reqId
+
+    const followReq = await followModel.findById(reqId).populate("follower").populate("followee", "_id")
+
+    if (!followReq) {
+        return res.status(404).json({
+            message: "The request does not exist."
+        })
+    }
+
+    if (followReq.followee._id.toString() !== userId) {
+
+        return res.status(403).json({
+            message: "You are not authorised to handle this follow request . . ."
+        })
+    }
+
+    const rejectedReq = await followModel.findOneAndUpdate(
+        {
+            _id: reqId,
+            status: "pending",
+        },
+        {
+            status: "rejected",
+        },
+        {
+            new: true,
+        }
+    ).populate("follower", "username")
+
+    if (!rejectedReq) {
+        return res.status(409).json({
+            message: "The request was already handled."
+        })
+    }
+
+    res.status(200).json({
+        message: `Request accepted from ${rejectedReq.follower.username}`,
+        rejectedReq
+    })
+
+
+
+}
+
 
 
 
 module.exports = {
     getUserController,
     followUserController,
-    fetchFollowRequestsController
+    fetchFollowRequestsController,
+    acceptFollowRequest,
+    rejectFollowRequest
 }
