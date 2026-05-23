@@ -6,6 +6,7 @@ const userRouter = express.Router()
 
 userRouter.get("/fetch-users", userController.getUserController)
 userRouter.post("/:followeeId/follow", identifyuser, userController.followUserController)
+userRouter.post("/:followeeId/unfollow", identifyuser, userController.unFollowUserController)
 userRouter.get("/follow-requests/fetch", identifyuser, userController.fetchFollowRequestsController)
 userRouter.post("/follow-req/:reqId/accept", identifyuser, userController.acceptFollowRequest)
 userRouter.post("/follow-req/:reqId/reject", identifyuser, userController.rejectFollowRequest)

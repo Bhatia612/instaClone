@@ -47,21 +47,43 @@ async function followUserController(req, res) {
         })
     }
 
-    const follow = await followModel.create({
+    const followed = await followModel.create({
         followee: followeeId,
         follower: followerId
-    }).populate("followee", "username")
+    })
 
     res.status(200).json({
-        message: `Follow request sent to ${follow.followee.username}`,
-        follow
+        message: `Follow request sent.`,
+        followed
     })
+}
+
+async function unFollowUserController(req, res) {
+    const userId = req.decodedUser.id;
+    const followeeId = req.params.followeeId;
+
+    const unfollowed = await followModel.findOneAndDelete({
+        follower: userId,
+        followee: followeeId,
+    })
+    console.log(unfollowed)
+
+    if (!unfollowed) {
+        return res.status(404).json({
+            message: "You are not following this user.",
+        })
+    }
+
+    return res.status(200).json({
+        message: `You're not following this user anymore`,
+    });
 }
 
 async function fetchFollowRequestsController(req, res) {
     const userId = req.decodedUser.id
 
     const allFollowrequests = await followModel.find({
+        status: "pending",
         $or: [
             { follower: userId },
             { followee: userId }
@@ -175,10 +197,10 @@ async function rejectFollowRequest(req, res) {
 
 
 
-
 module.exports = {
     getUserController,
     followUserController,
+    unFollowUserController,
     fetchFollowRequestsController,
     acceptFollowRequest,
     rejectFollowRequest
