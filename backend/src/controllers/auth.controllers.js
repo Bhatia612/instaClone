@@ -76,16 +76,16 @@ async function loginController(req, res) {
 
     if (!user) {
         return res.status(400).json({
-            message: "The use does not exists.",
+            message: "invalid credientials",
         })
     }
 
     // checking if password is correct.
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
-    if (!isPasswordCorrect) {
+    if (!user || !isPasswordCorrect) {
         return res.status(400).json({
-            message: "Password incorrect",
+            message: "invalid credientials",
         })
     }
 

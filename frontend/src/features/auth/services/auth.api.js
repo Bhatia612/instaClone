@@ -19,3 +19,17 @@ export async function register(username, email, password) {
         throw error
     }
 }
+
+export async function login(usernameOrEmail, password) {
+
+    try {
+        const response = await api.post("/login", {
+            usernameOrEmail, password
+        })
+
+        return response.data
+
+    } catch (error) {
+        throw error
+    }
+}
