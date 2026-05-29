@@ -1,0 +1,32 @@
+@mixin flex-col($gap: 0) {
+    display: flex;
+    flex-direction: column;
+    gap: $gap;
+}
+
+.form-container {
+    @include flex-col($gap: 1rem);
+    justify-content: center;
+    width: 30%;
+
+
+    & form {
+        @include flex-col(.5rem);
+
+
+        & input,
+        & button {
+            padding: .8rem 1rem;
+            border-radius: 1rem;
+            outline: none;
+            border: none;
+        }
+
+        & button {
+            font-weight: bolder;
+
+        }
+
+
+    }
+}

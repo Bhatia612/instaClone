@@ -1,0 +1,12 @@
+.button {
+    cursor: pointer;
+
+    &:hover {
+        opacity: .8;
+    }
+
+    &.primary-button {
+        color: white;
+        background: rgb(255, 10, 10);
+    }
+}
