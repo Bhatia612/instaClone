@@ -54,6 +54,19 @@ async function likePostController(req, res) {
         })
     }
 
+    const isLiked = await likeModel.findOne({
+        postId, userId
+    })
+
+    if (isLiked) {
+        const unliked = await likeModel.findByIdAndDelete(isLiked._id)
+
+        return res.status(200).json({
+            message: "Post unliked . . .",
+            unliked
+        })
+    }
+
     const like = await likeModel.create({
         postId, userId
     })
@@ -63,6 +76,7 @@ async function likePostController(req, res) {
         like
     })
 }
+
 
 module.exports = {
     createPostController,
