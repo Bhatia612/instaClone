@@ -5,20 +5,23 @@ const userSchema = new mongoose.Schema(
         username: {
             type: String,
             required: [true, "Username required to create user."],
-            unique: [true, "Username should be unique."],
+            unique: true,
+            trim: true
         },
 
         email: {
             type: String,
             required: [true, "Email required to create user."],
-            unique: [true, "Email should be unique."],
+            unique: true,
             lowercase: true,
+            trim: true,
+            match: [/^\S+@\S+\.\S+$/, "Please enter a valid email"]
         },
 
         password: {
             type: String,
             required: [true, "Password required to create user."],
-            minlength: 6,
+            minlength: [6, "Password must be at least 6 characters"],
             select: false
         },
 
@@ -35,6 +38,6 @@ const userSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-const userModel = mongoose.model("user", userSchema);
+const User = mongoose.model("User", userSchema);
 
-module.exports = userModel
+module.exports = User
