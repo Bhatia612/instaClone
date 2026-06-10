@@ -4,13 +4,13 @@ const followSchema = new mongoose.Schema(
     {
         follower: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "user",
+            ref: "User",
             required: [true, "Follower required to create follow request."],
         },
 
         followee: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "user",
+            ref: "User",
             required: [true, "Followee required to create follow request."],
         },
 
@@ -25,6 +25,6 @@ const followSchema = new mongoose.Schema(
 
 followSchema.index({ follower: 1, followee: 1 }, { unique: true })
 
-const followModel = mongoose.model("follows", followSchema)
+const Follow = mongoose.model("Follow", followSchema)
 
-module.exports = followModel
+module.exports = Follow
