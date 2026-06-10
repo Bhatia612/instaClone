@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken")
 
-async function identifyuser(req, res, next) {
+async function authenticate(req, res, next) {
     const token = req.cookies.token
 
 
@@ -10,19 +10,19 @@ async function identifyuser(req, res, next) {
         })
     }
 
-    let decoded = null
 
     try {
-        decoded = jwt.verify(token, process.env.JWT_SECRET)
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        req.decodedUser = decoded
+        next()
     } catch (err) {
-        return res.status(401).json({
-            message: "Unauthorised request . . ."
-        })
+        if (err.name === "TokenExpiredError") {
+            return res.status(401).json({ message: "Session expired, please login again" })
+        }
+        return res.status(401).json({ message: "Invalid token, unauthorized request" })
     }
-
-    req.decodedUser = decoded
-
-    next()
 }
 
-module.exports = identifyuser;
+
+
+module.exports = authenticate;
