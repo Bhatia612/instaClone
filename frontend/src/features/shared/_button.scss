@@ -1,5 +1,7 @@
 .button {
     cursor: pointer;
+    outline: none;
+    border: none;
 
     &:hover {
         opacity: .8;

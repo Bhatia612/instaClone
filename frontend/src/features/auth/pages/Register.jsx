@@ -16,7 +16,8 @@ function Register() {
         e.preventDefault()
 
         await handleRegister(username, email, password)
-        navigate("/")
+        navigate("/feed")
+
     }
 
     return (

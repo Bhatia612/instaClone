@@ -23,7 +23,7 @@ async function createPostController(req, res) {
     const post = await postModel.create({
         caption: req.body.caption,
         imageUrl: file.url,
-        userId: req.decodedUser.id
+        user: req.decodedUser.id
     })
 
     res.status(200).json({
@@ -34,7 +34,7 @@ async function createPostController(req, res) {
 }
 
 async function getPostsController(req, res) {
-    const posts = await postModel.find().populate("userId", "username profilePic")
+    const posts = await postModel.find().populate("user", "username profilePic")
 
     res.status(200).json({
         message: "These are all the posts: ",
@@ -43,10 +43,10 @@ async function getPostsController(req, res) {
 }
 
 async function likePostController(req, res) {
-    const userId = req.decodedUser.id
-    const postId = req.params.postId
+    const user = req.decodedUser.id
+    const post = req.params.postId
 
-    const doesPostExists = postModel.findById(postId)
+    const doesPostExists = postModel.findById(post)
 
     if (!doesPostExists) {
         return res.status(401).json({
@@ -55,7 +55,7 @@ async function likePostController(req, res) {
     }
 
     const isLiked = await likeModel.findOne({
-        postId, userId
+        post, user
     })
 
     if (isLiked) {
@@ -68,12 +68,11 @@ async function likePostController(req, res) {
     }
 
     const like = await likeModel.create({
-        postId, userId
+        post, user
     })
 
     return res.status(200).json({
         message: "post liked . . .",
-        like
     })
 }
 

@@ -1,0 +1,24 @@
+import { createContext, useState } from "react";
+
+export const PostContext = createContext()
+
+export const PostContextProvider = ({ children }) => {
+    const [loading, setLoading] = useState(true)
+    const [post, setPost] = useState(null)
+    const [feed, setFeed] = useState(null)
+
+
+    return (
+        <PostContext.Provider value={{
+            loading,
+            post,
+            feed,
+            setLoading,
+            setPost,
+            setFeed
+        }}>
+            {children}
+        </PostContext.Provider>
+    )
+
+}

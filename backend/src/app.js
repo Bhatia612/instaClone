@@ -10,7 +10,7 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
     credentials: true,
-    origin: "http://localhost:5173"
+    origin: process.env.CLIENT_URL || "http://localhost:5173"
 }))
 
 
@@ -21,6 +21,11 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 
 app.use("/api/posts", postRouter)
+
+app.use((err, req, res, next) => {
+    console.error(err.message)
+    res.status(err.status || 500).json({ message: err.message || "Something went wrong" })
+})
 
 
 module.exports = app

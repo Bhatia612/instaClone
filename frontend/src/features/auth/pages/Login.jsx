@@ -15,7 +15,7 @@ function Login() {
     e.preventDefault()
 
     await handleLogin(usernameOrEmail, password)
-    navigate("/")
+    navigate("/feed")
   }
 
   return (
