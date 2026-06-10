@@ -4,13 +4,14 @@ const postSchema = new mongoose.Schema(
     {
         user: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "user",
+            ref: "User",
             required: [true, "userId required to create post."],
         },
 
         caption: {
             type: String,
             default: "",
+            trim: true
         },
 
         imageUrl: {
@@ -21,6 +22,6 @@ const postSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-const postModel = mongoose.model("post", postSchema);
+const Post = mongoose.model("Post", postSchema);
 
-module.exports = postModel;
+module.exports = Post;
