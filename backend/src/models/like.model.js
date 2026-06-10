@@ -2,20 +2,20 @@ const mongoose = require("mongoose")
 
 const likeSchema = new mongoose.Schema({
     post: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: [true, "Need postId ot create like for the post."],
-        ref: "posts"
+        ref: "Post"
     },
     user: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: [true, "Need userId to like the post."],
-        ref: "users"
+        ref: "User"
     }
 }, { timestamps: true })
 
 likeSchema.index({ post: 1, user: 1 }, { unique: true })
 
 
-const likeModel = mongoose.model("likes", likeSchema)
+const Like = mongoose.model("Like", likeSchema)
 
-module.exports = likeModel
+module.exports = Like
