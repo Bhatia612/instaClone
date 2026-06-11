@@ -1,114 +1,100 @@
-const userModel = require("../models/user.model")
+const User = require("../models/user.model")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 
 async function registerController(req, res) {
-    const { username, email, password, bio, profilePic } = req.body
+    try {
+        const { username, email, password, bio, profilePic } = req.body
 
-    // Checking all fields are provided.
+        if (!username || !email || !password) {
+            return res.status(400).json({ message: "All fields are required" })
+        }
 
-    if (!username || !email || !password) {
-        return res.status(400).json({
-            message: "All fields are required",
-        });
-    }
-
-    // Checking if user already has account with provided username or email.
-
-    const doesUserExists = await userModel.findOne({
-        $or: [
-            { username: username },
-            { email: email }
-        ]
-    })
-
-    if (doesUserExists) {
-        return res.status(409).json({
-            message: "The user alerady exists . . .",
+        const doesUserExist = await User.findOne({
+            $or: [{ username }, { email }]
         })
+
+        if (doesUserExist) {
+            return res.status(409).json({ message: "User already exists" })
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10)
+        const user = await User.create({
+            username, email, password: hashedPassword, bio, profilePic
+        })
+
+        const token = jwt.sign(
+            { id: user._id, username: user.username },
+            process.env.JWT_SECRET,
+            { expiresIn: "1d" }
+        )
+
+        res.cookie("token", token, { httpOnly: true })
+
+        res.status(201).json({
+            message: "User registered successfully",
+            username: user.username
+        })
+
+    } catch (error) {
+        res.status(500).json({ message: error.message })
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await userModel.create({
-        username, email, password: hashedPassword, bio, profilePic
-    })
-
-    // creating a token and storeing in cookies.
-
-    const token = jwt.sign({
-        id: user._id,
-        username: user.username
-    }, process.env.JWT_SECRET,
-        { expiresIn: '1d' })
-
-
-    res.cookie("token", token)
-
-    res.status(200).json({
-        message: "New User Registered . . .",
-        username: user.username
-    })
 }
 
 async function loginController(req, res) {
-    const { usernameOrEmail, password } = req.body
+    try {
+        const { usernameOrEmail, password } = req.body
 
-    // Checking all fields are provided.
+        if (!usernameOrEmail || !password) {
+            return res.status(400).json({ message: "All fields are required" })
+        }
 
-    if (!usernameOrEmail || !password) {
-        return res.status(400).json({
-            message: "All fields are required",
-        });
-    }
+        const user = await User.findOne({
+            $or: [
+                { username: usernameOrEmail },
+                { email: usernameOrEmail }
+            ]
+        }).select("+password")
 
-    // Checking if user has account with provided username or email.
+        if (!user) {
+            return res.status(400).json({ message: "Invalid credentials" })
+        }
 
-    const user = await userModel.findOne({
-        $or: [
-            { username: usernameOrEmail },
-            { email: usernameOrEmail }
-        ]
-    }).select("+password")
+        const isPasswordCorrect = await bcrypt.compare(password, user.password)
 
-    console.log(user.password)
+        if (!isPasswordCorrect) {
+            return res.status(400).json({ message: "Invalid credentials" })
+        }
 
-    //If user not registered.
+        const token = jwt.sign(
+            { id: user._id, username: user.username },
+            process.env.JWT_SECRET,
+            { expiresIn: "1d" }
+        )
 
-    if (!user) {
-        return res.status(400).json({
-            message: "invalid credientials",
+        res.cookie("token", token, { httpOnly: true })
+
+        res.status(200).json({
+            message: "Logged in successfully",
+            username: user.username
         })
+
+    } catch (error) {
+        res.status(500).json({ message: error.message })
     }
+}
 
-    // checking if password is correct.
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-
-    if (!user || !isPasswordCorrect) {
-        return res.status(400).json({
-            message: "invalid credientials",
-        })
+async function logoutController(req, res) {
+    try {
+        res.clearCookie("token")
+        res.status(200).json({ message: "Logged out successfully" })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
     }
-
-    // creating a token and storeing in cookies.
-
-    const token = jwt.sign({
-        id: user._id,
-        username: user.username
-    }, process.env.JWT_SECRET,
-        { expiresIn: '1d' })
-
-
-    res.cookie("token", token)
-
-
-    res.status(200).json({
-        message: "user logged in",
-        username: user.username
-    })
-
 }
 
 module.exports = {
     registerController,
-    loginController
+    loginController,
+    logoutController
 }
