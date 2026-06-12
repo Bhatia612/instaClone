@@ -76,7 +76,10 @@ async function loginController(req, res) {
 
         res.status(200).json({
             message: "Logged in successfully",
-            username: user.username
+            user: {
+                id: user._id,
+                username: user.username
+            }
         })
 
     } catch (error) {
