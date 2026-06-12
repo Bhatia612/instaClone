@@ -11,8 +11,6 @@ const imageKit = new ImageKit({
 async function createPostController(req, res) {
 
     try {
-
-
         const file = await imageKit.files.upload(
             {
                 file: await toFile(Buffer.from(req.file.buffer), "file"),
@@ -40,11 +38,18 @@ async function createPostController(req, res) {
 async function getPostsController(req, res) {
     try {
 
-        const posts = await postModel.find().populate("user", "username profilePic")
+        const posts = await postModel.find().populate("user", "username profilePic").sort({ createdAt: -1 })
+
+        const userId = req.user.id
+
+        const postsWithLikes = await Promise.all(posts.map(async (post) => {
+            const liked = await likeModel.findOne({ post: post._id, user: userId })
+            return { ...post.toObject(), isLiked: !!liked }
+        }))
 
         res.status(200).json({
             message: "These are all the posts: ",
-            posts
+            posts: postsWithLikes
         })
     } catch (error) {
         res.status(500).json({ message: error.message })
