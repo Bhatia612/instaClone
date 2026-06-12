@@ -7,7 +7,10 @@ import CreatePost from "./features/posts/pages/CreatePost";
 import { useAuth } from "./features/auth/hooks/useAuth"
 
 function ProtectedRoute() {
-    const { user } = useAuth()
+    const { user, loading } = useAuth()
+
+    if (loading) return <p>Loading...</p>
+
     return user ? <Outlet /> : <Navigate to="/login" />
 }
 

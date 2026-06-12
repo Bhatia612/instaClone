@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import Post from '../components/Post'
 import { usePosts } from '../hooks/usePosts'
 import "../styles/feed.scss"
@@ -10,13 +10,13 @@ function Feed() {
 
     useEffect(() => {
         handleGetFeed()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    if (loading || !feed) {
+    if (loading) {
         return (<main><h1>Feed is Loading . . .</h1></main>)
     }
 
-    console.log(feed)
 
     return (
         <main>
@@ -24,7 +24,7 @@ function Feed() {
             <div className="posts-container">
                 {feed.map((post) => {
                     console.log(post)
-                    return <Post user={post.user} post={post} onLike={handleLikePost} />
+                    return <Post key={post._id} user={post.user} post={post} onLike={handleLikePost} />
 
                 })}
 
