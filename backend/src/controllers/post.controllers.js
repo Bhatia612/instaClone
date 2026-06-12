@@ -10,70 +10,86 @@ const imageKit = new ImageKit({
 
 async function createPostController(req, res) {
 
-    console.log(req.file)
+    try {
 
-    const file = await imageKit.files.upload(
-        {
-            file: await toFile(Buffer.from(req.file.buffer), "file"),
-            fileName: "userPosts",
-            folder: "instaClone"
-        }
-    )
 
-    const post = await postModel.create({
-        caption: req.body.caption,
-        imageUrl: file.url,
-        user: req.decodedUser.id
-    })
+        const file = await imageKit.files.upload(
+            {
+                file: await toFile(Buffer.from(req.file.buffer), "file"),
+                fileName: "userPosts",
+                folder: "instaClone"
+            }
+        )
 
-    res.status(200).json({
-        message: "Post created . . .",
-        post
-    })
+        const post = await postModel.create({
+            caption: req.body.caption,
+            imageUrl: file.url,
+            user: req.user.id
+        })
+
+        res.status(201).json({
+            message: "Post created . . .",
+            post
+        })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
 
 }
 
 async function getPostsController(req, res) {
-    const posts = await postModel.find().populate("user", "username profilePic")
+    try {
 
-    res.status(200).json({
-        message: "These are all the posts: ",
-        posts
-    })
+        const posts = await postModel.find().populate("user", "username profilePic")
+
+        res.status(200).json({
+            message: "These are all the posts: ",
+            posts
+        })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
 }
 
 async function likePostController(req, res) {
-    const user = req.decodedUser.id
-    const post = req.params.postId
 
-    const doesPostExists = postModel.findById(post)
+    try {
 
-    if (!doesPostExists) {
-        return res.status(401).json({
-            message: "Post"
+
+        const user = req.user.id
+        const post = req.params.postId
+
+        const doesPostExists = await postModel.findById(post)
+
+        if (!doesPostExists) {
+            return res.status(404).json({
+                message: "Post"
+            })
+        }
+
+        const isLiked = await likeModel.findOne({
+            post, user
         })
-    }
 
-    const isLiked = await likeModel.findOne({
-        post, user
-    })
+        if (isLiked) {
+            const unliked = await likeModel.findByIdAndDelete(isLiked._id)
 
-    if (isLiked) {
-        const unliked = await likeModel.findByIdAndDelete(isLiked._id)
+            return res.status(200).json({
+                message: "Post unliked . . .",
+                unliked
+            })
+        }
+
+        const like = await likeModel.create({
+            post, user
+        })
 
         return res.status(200).json({
-            message: "Post unliked . . .",
-            unliked
+            message: "post liked . . .",
         })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
     }
-
-    const like = await likeModel.create({
-        post, user
-    })
-
-    return res.status(200).json({
-        message: "post liked . . .",
-    })
 }
 
 
