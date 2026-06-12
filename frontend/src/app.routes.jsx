@@ -4,10 +4,24 @@ import Login from "./features/auth/pages/Login";
 import Feed from "./features/posts/pages/Feed";
 import CreatePost from "./features/posts/pages/CreatePost";
 
+import { useAuth } from "./features/auth/hooks/useAuth"
+
+function ProtectedRoute() {
+    const { user } = useAuth()
+    return user ? <Outlet /> : <Navigate to="/login" />
+}
+
 export const router = createBrowserRouter([
-    { path: "/", element: <h2>Working . .. </h2> },
+    { path: "/", element: <Navigate to="/feed" /> },
     { path: "/register", element: <Register /> },
     { path: "/login", element: <Login /> },
-    { path: "/feed", element: <Feed /> },
-    { path: "/create-post", element: <CreatePost /> }
+    {
+        element: <ProtectedRoute />,
+        children: [
+            { path: "/feed", element: <Feed /> },
+            { path: "/create-post", element: <CreatePost /> }
+        ]
+
+    },
+    { path: "*", element: <h2>404 - Page not found</h2> }
 ])
