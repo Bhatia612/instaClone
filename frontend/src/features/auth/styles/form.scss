@@ -5,28 +5,61 @@
 }
 
 .form-container {
-    @include flex-col($gap: 1rem);
-    justify-content: center;
-    width: 300px;
+    @include flex-col($gap: var(--space-lg));
+    width: 100%;
+    max-width: 380px;
+    padding: var(--space-2xl);
+    background-color: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
 
+    h1 {
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        color: var(--text-primary);
+    }
 
-    & form {
-        @include flex-col(.5rem);
+    p {
+        font-size: 13px;
+        color: var(--text-secondary);
 
+        a {
+            color: var(--accent);
+            font-weight: 600;
 
-        & input,
-        & button {
-            padding: .8rem 1rem;
-            border-radius: 1rem;
-            outline: none;
-            border: none;
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+
+    form {
+        @include flex-col(var(--space-sm));
+
+        input {
+            padding: 12px var(--space-md);
+            border-radius: var(--radius-md);
+            border: 1.5px solid var(--border-color);
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: border-color var(--transition), box-shadow var(--transition);
+
+            &:focus {
+                border-color: var(--accent);
+                box-shadow: 0 0 0 3px rgba(0, 149, 246, 0.15);
+            }
+
+            &::placeholder {
+                color: var(--text-muted);
+            }
         }
 
-        & button {
-            font-weight: bolder;
-
+        button {
+            margin-top: var(--space-xs);
+            width: 100%;
         }
-
-
     }
 }
