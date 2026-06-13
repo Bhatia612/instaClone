@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema(
 
         profilePic: {
             type: String,
-            default: "",
+            default: "https://ik.imagekit.io/mohit49251/dummy_pfp.webp?updatedAt=1778116617304",
         },
     },
     { timestamps: true }
