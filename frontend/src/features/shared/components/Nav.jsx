@@ -11,13 +11,13 @@ function Nav() {
     }
 
     return (
-        <div className="nav">
+        <nav className="nav">
             <h2>Instagram</h2>
-            <div>
+            <div className="nav-actions">
                 <button onClick={() => navigate("/create-post")} className='button primary-button'>Create post</button>
-                <button onClick={onLogout} className='button'>Logout</button>
+                <button onClick={onLogout} className='button secondary-button'>Logout</button>
             </div>
-        </div>
+        </nav>
     )
 }
 

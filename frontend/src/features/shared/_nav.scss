@@ -3,13 +3,24 @@
     width: 100%;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 3rem;
+    padding: var(--space-md) var(--space-2xl);
+    background-color: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
 
-    & button {
-        padding-inline: 1rem;
-        padding-block: .5rem;
-        font-size: .9rem;
-        border-radius: .5rem;
+    h2 {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        color: var(--text-primary);
     }
 
+    .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
 }
