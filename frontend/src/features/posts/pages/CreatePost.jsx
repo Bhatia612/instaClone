@@ -32,24 +32,26 @@ const CreatePost = () => {
 
     return (
         <main>
-            <div className="form-container">
+            <div className="create-post-container">
                 <h1>Create post</h1>
                 {error && <p className="error">{error}</p>}
                 <form onSubmit={handleSubmit}>
-                    <label htmlFor="post-image">Select image</label>
+                    <label className="image-upload-label" htmlFor="post-image">
+                        Upload Image
+                    </label>
                     <input
                         ref={postImageInputFieldRef}
-                        hidden type="file"
+                        hidden
+                        type="file"
                         name="post-image"
                         id="post-image" />
-
                     <input
-                        onChange={(e) => { setCaption(e.target.value) }}
+                        onChange={e => setCaption(e.target.value)}
+                        value={caption}
                         type="text"
                         name="caption"
                         id="caption"
-                        placeholder='Enter caption . . .' />
-
+                        placeholder='Enter caption...' />
                     <button className="button primary-button">
                         {loading ? "Posting..." : "Post"}
                     </button>
